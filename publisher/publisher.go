@@ -10,10 +10,13 @@ import (
 )
 
 func Publish(trackingChannel <-chan *models.TrackingObject, kafkaHost *string, kafkaTopic string) error {
-	producer, err := sarama.NewAsyncProducer([]string{*kafkaHost}, nil)
+	kafkaConfig := sarama.NewConfig()
+	kafkaConfig.Producer.Return.Errors = false
+	producer, err := sarama.NewAsyncProducer([]string{*kafkaHost}, kafkaConfig)
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
+
 	var object *models.TrackingObject
 	for {
 		object = <-trackingChannel
