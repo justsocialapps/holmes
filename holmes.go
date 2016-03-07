@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 
 	"github.com/justsocialapps/holmes/assets"
 	"github.com/justsocialapps/holmes/handlers"
@@ -42,7 +43,14 @@ func main() {
 	var proxyPath = flag.String("proxyPath", "", "The base path for reaching Holmes if Holmes is operated behind a reverse proxy.")
 	var listenPort = flag.String("listenPort", "3001", "The TCP port that Holmes listens on")
 	var kafkaHost = flag.String("kafkaHost", "localhost:9092", "The Kafka host to consume messages from")
+	var logfileName = flag.String("logfile", "holmes.log", "The file to log messages to")
 	flag.Parse()
+
+	logFile, err := os.OpenFile(*logfileName, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.SetOutput(logFile)
 
 	baseUrl := *protocol + "://" + *host
 	if !(*protocol == "https" && *proxyPort == "443") && !(*protocol == "http" && *proxyPort == "80") {

@@ -40,6 +40,8 @@ func Track(out chan<- *models.TrackingObject, w http.ResponseWriter, r *http.Req
 	trackingObject, err := composeTrackingObject(r)
 	if err != nil {
 		log.Printf("Error processing tracking request: %s\n", err)
+		w.WriteHeader(http.StatusNoContent)
+		return
 	}
 
 	out <- trackingObject
