@@ -17,6 +17,9 @@ To install Holmes, run
 go get github.com/justsocialapps/holmes
 ```
 
+or grab the binary of the [most current
+release](https://github.com/justsocialapps/holmes/releases).
+
 # Running
 
 To start Holmes, simply call `holmes` (assuming that $GOPATH/bin is on your
