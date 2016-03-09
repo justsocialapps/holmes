@@ -1,5 +1,7 @@
 # Holmes
 
+[![Build Status](https://travis-ci.org/justsocialapps/holmes.svg?branch=master)](https://travis-ci.org/justsocialapps/holmes)
+
 A simple analytics server written in Go, including a JavaScript client library.
 
 Holmes collects tracking information via the provided client library or by
