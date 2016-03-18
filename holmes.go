@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -12,6 +13,8 @@ import (
 	"github.com/justsocialapps/holmes/models"
 	"github.com/justsocialapps/holmes/publisher"
 )
+
+const version string = "1.1.0"
 
 //go:generate scripts/prepare_assets.sh
 //go:generate go run scripts/include_assets.go
@@ -44,7 +47,13 @@ func main() {
 	var listenPort = flag.String("listenPort", "3001", "The TCP port that Holmes listens on")
 	var kafkaHost = flag.String("kafkaHost", "localhost:9092", "The Kafka host to consume messages from")
 	var logfileName = flag.String("logfile", "holmes.log", "The file to log messages to")
+	var printVersion = flag.Bool("version", false, "Print Holmes version and exit")
 	flag.Parse()
+
+	if *printVersion {
+		fmt.Println(version)
+		return
+	}
 
 	logFile, err := os.OpenFile(*logfileName, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
