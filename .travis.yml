@@ -1,1 +1,9 @@
 language: go
+install:
+    - go get github.com/kisielk/errcheck
+    - go get github.com/shopify/sarama
+    - go get github.com/satori/go.uuid
+    - go get github.com/justsocialapps/assert
+script:
+    - errcheck .
+    - go test ./...

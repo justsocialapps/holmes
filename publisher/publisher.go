@@ -10,7 +10,7 @@ import (
 	"github.com/justsocialapps/holmes/models"
 )
 
-func Publish(trackingChannel <-chan *models.TrackingObject, kafkaHost *string, kafkaTopic string) error {
+func Publish(trackingChannel <-chan *models.TrackingObject, kafkaHost *string, kafkaTopic string) {
 	kafkaConfig := sarama.NewConfig()
 	kafkaConfig.Producer.Return.Errors = true
 	kafkaConfig.Producer.Return.Successes = true
