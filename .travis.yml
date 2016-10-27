@@ -4,8 +4,7 @@ install:
     - go get github.com/satori/go.uuid
     - go get github.com/justsocialapps/assert
     - go get github.com/justsocialapps/justlib
-    - go get github.com/alecthomas/gometalinter
+    - go get github.com/kisielk/errcheck
 script:
-    - gometalinter --install
-    - gometalinter .
+    - errcheck .
     - go test ./...
