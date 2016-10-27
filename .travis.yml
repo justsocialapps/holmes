@@ -1,9 +1,11 @@
 language: go
 install:
-    - go get github.com/kisielk/errcheck
     - go get github.com/shopify/sarama
     - go get github.com/satori/go.uuid
     - go get github.com/justsocialapps/assert
+    - go get github.com/justsocialapps/justlib
+    - go get github.com/alecthomas/gometalinter
 script:
-    - errcheck .
+    - gometalinter --install
+    - gometalinter .
     - go test ./...

@@ -8,6 +8,7 @@ import (
 	"github.com/shopify/sarama"
 
 	"github.com/justsocialapps/holmes/models"
+	"github.com/justsocialapps/justlib"
 )
 
 func Publish(trackingChannel <-chan *models.TrackingObject, kafkaHost *string, kafkaTopic string) {
@@ -15,7 +16,12 @@ func Publish(trackingChannel <-chan *models.TrackingObject, kafkaHost *string, k
 	kafkaConfig.Producer.Return.Errors = true
 	kafkaConfig.Producer.Return.Successes = true
 	kafkaConfig.Producer.RequiredAcks = sarama.WaitForLocal
-	producer, err := sarama.NewAsyncProducer([]string{*kafkaHost}, kafkaConfig)
+	var producer sarama.AsyncProducer
+	err := justlib.Try(7, 10*time.Second, func() error {
+		var err error
+		producer, err = sarama.NewAsyncProducer([]string{*kafkaHost}, kafkaConfig)
+		return err
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -25,9 +31,9 @@ func Publish(trackingChannel <-chan *models.TrackingObject, kafkaHost *string, k
 	for {
 		select {
 		case successMsg := <-producer.Successes():
-			log.Printf("successfully delivered msg: %s\n", *successMsg)
+			log.Printf("successfully delivered msg: %v\n", *successMsg)
 		case errorMsg := <-producer.Errors():
-			log.Printf("error delivering message: %s\n", *errorMsg)
+			log.Printf("error delivering message: %v\n", *errorMsg)
 		case object = <-trackingChannel:
 			stringifiedObject, err := json.Marshal(object)
 			if err == nil {
