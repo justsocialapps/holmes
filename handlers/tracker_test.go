@@ -64,11 +64,11 @@ func TestTrackWithCorrectRequestPublishesTrackingEvent(t *testing.T) {
 		}
 		assert.Equal(trackingObject.UserAgent, "go test", "wrong user agent")
 		assert.Equal(trackingObject.Referer, "referer", "wrong referer")
-		assert.Equal(trackingObject.Target.Hash, "entity.865", "wrong hash")
-		assert.Equal(trackingObject.Target.Entity, "ENTITY,865", "wrong entity")
-		assert.Equal(trackingObject.Target.PageTitle, "Just Software (Organisation)", "wrong page title")
-		assert.Equal(trackingObject.Target.Type, "PAGE_VIEW", "wrong type")
-		assert.Equal(trackingObject.Target.HolmesId, "7be4c968-aea0-4d76-a534-49bd0bb0222b", "wrong holmes id")
+		assert.Equal(trackingObject.Target["hash"], "entity.865", "wrong hash")
+		assert.Equal(trackingObject.Target["entity"], "ENTITY,865", "wrong entity")
+		assert.Equal(trackingObject.Target["pageTitle"], "Just Software (Organisation)", "wrong page title")
+		assert.Equal(trackingObject.Target["type"], "PAGE_VIEW", "wrong type")
+		assert.Equal(trackingObject.Target["holmesId"], "7be4c968-aea0-4d76-a534-49bd0bb0222b", "wrong holmes id")
 	case <-done:
 		assert.Equal(recorder.Code, http.StatusNoContent, "Unexpected status code")
 	}
