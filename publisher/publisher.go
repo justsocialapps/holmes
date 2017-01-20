@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/shopify/sarama"
+	"github.com/Shopify/sarama"
 
 	"github.com/justsocialapps/holmes/models"
 	"github.com/justsocialapps/justlib"
@@ -31,7 +31,7 @@ func Publish(trackingChannel <-chan *models.TrackingObject, kafkaHost *string, k
 	for {
 		select {
 		case successMsg := <-producer.Successes():
-			log.Printf("successfully delivered msg: %v\n", *successMsg)
+			log.Printf("successfully delivered msg: %v\n", successMsg.Offset)
 		case errorMsg := <-producer.Errors():
 			log.Printf("error delivering message: %v\n", *errorMsg)
 		case object = <-trackingChannel:

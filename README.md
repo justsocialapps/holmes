@@ -50,7 +50,7 @@ you can start tracking:
 if (typeof (window.Holmes) === 'undefined') {
     return;
 }
-window.Holmes.pageView(TRACKING_OBJECT);
+window.Holmes.track(TRACKING_OBJECT);
 ```
 
 The check for `window.Holmes` is necessary since the JavaScript will load

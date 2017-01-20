@@ -1,7 +1,6 @@
 /* eslint-env browser */
 
 (function(window) {
-    var xhr = new XMLHttpRequest();
     var holmesId = window.localStorage.getItem('_holmesId');
     if(holmesId === null) {
         window.localStorage.setItem('_holmesId', '__HOLMES_ID__');
@@ -13,6 +12,7 @@
         + '/track?u='
         +new Date().getTime()
         +'&t=' + encodeURIComponent(JSON.stringify(trackingObject));
+        var xhr = new XMLHttpRequest();
         xhr.open('GET', url);
         xhr.send();
     }
@@ -21,6 +21,7 @@
         pageView: function(trackingObject) {
             trackingObject['type'] = 'PAGE_VIEW';
             track(trackingObject);
-        }
+        },
+        track: track
     };
 }(window));

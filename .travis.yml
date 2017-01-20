@@ -1,6 +1,6 @@
 language: go
 install:
-    - go get github.com/shopify/sarama
+    - go get github.com/Shopify/sarama
     - go get github.com/satori/go.uuid
     - go get github.com/justsocialapps/assert
     - go get github.com/justsocialapps/justlib

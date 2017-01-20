@@ -18,10 +18,11 @@ func composeTrackingObject(r *http.Request) (*models.TrackingObject, error) {
 	if len(rawTarget) == 0 {
 		return nil, errors.New("No object to track")
 	}
-	var target models.TrackingTarget
+
+	var target map[string]interface{}
 	err := json.Unmarshal([]byte(rawTarget[0]), &target)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Error parsing tracking target '%s'", rawTarget))
+		return nil, fmt.Errorf("Error parsing tracking target '%s'", rawTarget)
 	}
 
 	trackingObject := &models.TrackingObject{
@@ -31,7 +32,7 @@ func composeTrackingObject(r *http.Request) (*models.TrackingObject, error) {
 		Time:      time.Now().Unix(),
 		Target:    target,
 	}
-	log.Println(fmt.Sprintf("tracking object %s", trackingObject))
+	log.Println(fmt.Sprintf("tracking object %v", trackingObject))
 
 	return trackingObject, nil
 }
