@@ -14,7 +14,7 @@ import (
 	"github.com/justsocialapps/holmes/publisher"
 )
 
-const version string = "1.4.0"
+const version string = "1.4.1"
 
 //go:generate scripts/prepare_assets.sh
 //go:generate go run scripts/include_assets.go
