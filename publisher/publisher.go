@@ -16,6 +16,7 @@ func Publish(trackingChannel <-chan *models.TrackingObject, kafkaHost *string, k
 	kafkaConfig.Producer.Return.Errors = true
 	kafkaConfig.Producer.Return.Successes = true
 	kafkaConfig.Producer.RequiredAcks = sarama.WaitForLocal
+	kafkaConfig.Version = sarama.V0_10_0_0
 	var producer sarama.AsyncProducer
 	err := justlib.Try(7, 10*time.Second, func() error {
 		var err error
