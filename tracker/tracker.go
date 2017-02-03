@@ -1,4 +1,4 @@
-package handlers
+package tracker
 
 import (
 	"encoding/json"
@@ -8,11 +8,17 @@ import (
 	"net/http"
 	"strings"
 	"time"
-
-	"github.com/justsocialapps/holmes/models"
 )
 
-func composeTrackingObject(r *http.Request) (*models.TrackingObject, error) {
+type TrackingObject struct {
+	UserAgent string                 `json:"userAgent"`
+	Referer   string                 `json:"referer"`
+	IPAddress string                 `json:"ipAddress"`
+	Time      int64                  `json:"time"`
+	Target    map[string]interface{} `json:"target"`
+}
+
+func composeTrackingObject(r *http.Request) (*TrackingObject, error) {
 	query := r.URL.Query()
 	rawTarget := query["t"]
 	if len(rawTarget) == 0 {
@@ -25,7 +31,7 @@ func composeTrackingObject(r *http.Request) (*models.TrackingObject, error) {
 		return nil, fmt.Errorf("Error parsing tracking target '%s'", rawTarget)
 	}
 
-	trackingObject := &models.TrackingObject{
+	trackingObject := &TrackingObject{
 		UserAgent: r.UserAgent(),
 		Referer:   r.Referer(),
 		IPAddress: strings.Split(r.RemoteAddr, ":")[0],
@@ -37,7 +43,7 @@ func composeTrackingObject(r *http.Request) (*models.TrackingObject, error) {
 	return trackingObject, nil
 }
 
-func Track(out chan<- *models.TrackingObject, w http.ResponseWriter, r *http.Request) {
+func Track(out chan<- *TrackingObject, w http.ResponseWriter, r *http.Request) {
 	trackingObject, err := composeTrackingObject(r)
 	if err != nil {
 		log.Printf("Error processing tracking request: %s\n", err)

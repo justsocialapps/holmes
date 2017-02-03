@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/justsocialapps/holmes/analytics"
 	"github.com/justsocialapps/holmes/assets"
-	"github.com/justsocialapps/holmes/handlers"
-	"github.com/justsocialapps/holmes/models"
 	"github.com/justsocialapps/holmes/publisher"
+	"github.com/justsocialapps/holmes/tracker"
 )
 
 const version string = "1.4.2"
@@ -19,7 +19,7 @@ const version string = "1.4.2"
 //go:generate scripts/prepare_assets.sh
 //go:generate go run scripts/include_assets.go
 
-func provideTrackingChannel(trackingChannel chan<- *models.TrackingObject, handler func(trackingChannel chan<- *models.TrackingObject, w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
+func provideTrackingChannel(trackingChannel chan<- *tracker.TrackingObject, handler func(trackingChannel chan<- *tracker.TrackingObject, w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		handler(trackingChannel, w, r)
 	}
@@ -46,7 +46,7 @@ func main() {
 	var proxyPath = flag.String("proxyPath", "", "The base path for reaching Holmes if Holmes is operated behind a reverse proxy.")
 	var listenPort = flag.String("listenPort", "3001", "The TCP port that Holmes listens on")
 	var kafkaHost = flag.String("kafkaHost", "localhost:9092", "The Kafka host to consume messages from")
-	var logfileName = flag.String("logfile", "holmes.log", "The file to log messages to")
+	var logfileName = flag.String("logfile", "", "The file to log messages to")
 	var printVersion = flag.Bool("version", false, "Print Holmes version and exit")
 	flag.Parse()
 
@@ -55,21 +55,27 @@ func main() {
 		return
 	}
 
-	logFile, err := os.OpenFile(*logfileName, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
-	if err != nil {
-		log.Fatal(err)
+	var logFile *os.File
+	if *logfileName == "" {
+		logFile = os.Stdout
+	} else {
+		var err error
+		logFile, err = os.OpenFile(*logfileName, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 	log.SetOutput(logFile)
 
-	baseUrl := *protocol + "://" + *host
+	baseURL := *protocol + "://" + *host
 	if !(*protocol == "https" && *proxyPort == "443") && !(*protocol == "http" && *proxyPort == "80") {
-		baseUrl = baseUrl + ":" + *proxyPort
+		baseURL = baseURL + ":" + *proxyPort
 	}
-	baseUrl = baseUrl + *proxyPath
+	baseURL = baseURL + *proxyPath
 
-	trackingChannel := make(chan *models.TrackingObject, 10)
-	http.HandleFunc("/track", provideTrackingChannel(trackingChannel, handlers.Track))
-	http.HandleFunc("/analytics.js", handlers.Analytics(baseUrl))
+	trackingChannel := make(chan *tracker.TrackingObject, 10)
+	http.HandleFunc("/track", provideTrackingChannel(trackingChannel, tracker.Track))
+	http.HandleFunc("/analytics.js", analytics.Analytics(baseURL))
 	go publisher.Publish(trackingChannel, kafkaHost, "tracking")
 
 	startServer("localhost", listenPort)

@@ -7,11 +7,11 @@ import (
 
 	"github.com/Shopify/sarama"
 
-	"github.com/justsocialapps/holmes/models"
+	"github.com/justsocialapps/holmes/tracker"
 	"github.com/justsocialapps/justlib"
 )
 
-func Publish(trackingChannel <-chan *models.TrackingObject, kafkaHost *string, kafkaTopic string) {
+func Publish(trackingChannel <-chan *tracker.TrackingObject, kafkaHost *string, kafkaTopic string) {
 	kafkaConfig := sarama.NewConfig()
 	kafkaConfig.Producer.Return.Errors = true
 	kafkaConfig.Producer.Return.Successes = true
@@ -28,7 +28,7 @@ func Publish(trackingChannel <-chan *models.TrackingObject, kafkaHost *string, k
 	}
 	log.Printf("Kafka producer up and running with broker %s", *kafkaHost)
 
-	var object *models.TrackingObject
+	var object *tracker.TrackingObject
 	for {
 		select {
 		case successMsg := <-producer.Successes():

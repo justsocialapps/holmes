@@ -1,4 +1,4 @@
-package handlers
+package tracker
 
 import (
 	"net/http"
@@ -6,14 +6,13 @@ import (
 	"testing"
 
 	"github.com/justsocialapps/assert"
-	"github.com/justsocialapps/holmes/models"
 )
 
 func TestTrackWithNoRequestArgumentDoesNotPublishTrackingEvent(t *testing.T) {
 	assert := assert.NewAssert(t)
 	recorder := httptest.NewRecorder()
 	request, _ := http.NewRequest("GET", "http://example.com", nil)
-	trackingChannel := make(chan *models.TrackingObject)
+	trackingChannel := make(chan *TrackingObject)
 	done := make(chan struct{})
 	go func() {
 		Track(trackingChannel, recorder, request)
@@ -30,7 +29,7 @@ func TestTrackWithWrongRequestDoesNotPublishTrackingEvent(t *testing.T) {
 	assert := assert.NewAssert(t)
 	recorder := httptest.NewRecorder()
 	request, _ := http.NewRequest("GET", "http://example.com/?t=123", nil)
-	trackingChannel := make(chan *models.TrackingObject)
+	trackingChannel := make(chan *TrackingObject)
 	done := make(chan struct{})
 	go func() {
 		Track(trackingChannel, recorder, request)
@@ -51,7 +50,7 @@ func TestTrackWithCorrectRequestPublishesTrackingEvent(t *testing.T) {
 	request.Header.Set("User-Agent", "go test")
 	request.Header.Set("Referer", "referer")
 
-	trackingChannel := make(chan *models.TrackingObject)
+	trackingChannel := make(chan *TrackingObject)
 	done := make(chan struct{})
 	go func() {
 		Track(trackingChannel, recorder, request)
