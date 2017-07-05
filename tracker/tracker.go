@@ -31,10 +31,20 @@ func composeTrackingObject(r *http.Request) (*TrackingObject, error) {
 		return nil, fmt.Errorf("Error parsing tracking target '%s'", rawTarget)
 	}
 
+	// We prefer the IP address stated in the X-Forwarded-For HTTP header.
+	// Only if this header is empty we use http.Request.RemoteAddr.
+	var originIPAddress string
+	forwardedFor := strings.TrimSpace(strings.SplitN(r.Header.Get("x-forwarded-for"), ",", 2)[0])
+	if len(forwardedFor) > 0 {
+		originIPAddress = forwardedFor
+	} else {
+		originIPAddress = strings.Split(r.RemoteAddr, ":")[0]
+	}
+
 	trackingObject := &TrackingObject{
 		UserAgent: r.UserAgent(),
 		Referer:   r.Referer(),
-		IPAddress: strings.Split(r.RemoteAddr, ":")[0],
+		IPAddress: originIPAddress,
 		Time:      time.Now().Unix(),
 		Target:    target,
 	}
