@@ -14,7 +14,7 @@ import (
 	"github.com/justsocialapps/holmes/tracker"
 )
 
-const version string = "1.4.3"
+const version string = "1.5.0"
 
 //go:generate scripts/prepare_assets.sh
 //go:generate go run scripts/include_assets.go
