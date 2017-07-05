@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/Shopify/sarama"
+	"gopkg.in/Shopify/sarama.v1"
 
 	"github.com/justsocialapps/holmes/tracker"
 	"github.com/justsocialapps/justlib"
