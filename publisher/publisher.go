@@ -18,9 +18,12 @@ func Publish(trackingChannel <-chan *tracker.TrackingObject, kafkaHost *string, 
 	kafkaConfig.Producer.RequiredAcks = sarama.WaitForLocal
 	kafkaConfig.Version = sarama.V0_10_0_0
 	var producer sarama.AsyncProducer
-	err := justlib.Try(7, 10*time.Second, func() error {
+	err := justlib.Try(0, 10*time.Second, func() error {
 		var err error
 		producer, err = sarama.NewAsyncProducer([]string{*kafkaHost}, kafkaConfig)
+		if err != nil {
+			log.Printf("Connection attempt to Kafka broker failed; trying again...\n")
+		}
 		return err
 	})
 	if err != nil {
