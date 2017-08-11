@@ -6,5 +6,5 @@ install:
     - go get github.com/justsocialapps/justlib
     - go get github.com/kisielk/errcheck
 script:
-    - errcheck .
+    - errcheck $(go list ./...|grep -v /vendor/|grep -v github.com/justsocialapps/holmes/scripts)
     - go test $(go list ./... | grep -v /vendor/)
