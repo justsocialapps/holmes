@@ -1,6 +1,7 @@
 package analytics
 
 import (
+	"log"
 	"net/http"
 	"strings"
 
@@ -14,6 +15,9 @@ func Analytics(baseUrl string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		uniqueRes := strings.Replace(res, "__HOLMES_ID__", uuid.NewV4().String(), -1)
 		w.Header().Add("Content-Type", "application/javascript")
-		w.Write([]byte(uniqueRes))
+		_, err := w.Write([]byte(uniqueRes))
+		if err != nil {
+			log.Printf("Error sending analytics script: %s\n", err)
+		}
 	}
 }
