@@ -7,4 +7,4 @@ install:
     - go get github.com/kisielk/errcheck
 script:
     - errcheck .
-    - go test ./...
+    - go test $(go list ./... | grep -v /vendor/)
