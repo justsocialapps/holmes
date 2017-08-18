@@ -8,9 +8,22 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	ua "github.com/mssola/user_agent"
 )
 
+type UserAgent struct {
+	Bot            bool   `json:"bot"`
+	Mobile         bool   `json:"mobile"`
+	BrowserName    string `json:"browserName"`
+	BrowserVersion string `json:"browserVersion"`
+	Locale         string `json:"locale"`
+	OS             string `json:"os"`
+	Platform       string `json:"platform"`
+}
+
 type TrackingObject struct {
+	UA        UserAgent              `json:"ua"`
 	UserAgent string                 `json:"userAgent"`
 	Referer   string                 `json:"referer"`
 	IPAddress string                 `json:"ipAddress"`
@@ -41,14 +54,25 @@ func composeTrackingObject(r *http.Request) (*TrackingObject, error) {
 		originIPAddress = strings.Split(r.RemoteAddr, ":")[0]
 	}
 
+	userAgent := ua.New(r.UserAgent())
+	browserName, browserVersion := userAgent.Browser()
+
 	trackingObject := &TrackingObject{
-		UserAgent: r.UserAgent(),
+		UA: UserAgent{
+			Bot:            userAgent.Bot(),
+			Mobile:         userAgent.Mobile(),
+			BrowserName:    browserName,
+			BrowserVersion: browserVersion,
+			Locale:         userAgent.Localization(),
+			OS:             userAgent.OS(),
+			Platform:       userAgent.Platform(),
+		},
+		UserAgent: userAgent.UA(),
 		Referer:   r.Referer(),
 		IPAddress: originIPAddress,
 		Time:      time.Now().Unix(),
 		Target:    target,
 	}
-	log.Println(fmt.Sprintf("tracking object %v", trackingObject))
 
 	return trackingObject, nil
 }

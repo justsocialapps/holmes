@@ -36,3 +36,6 @@
 [[constraint]]
   name = "gopkg.in/Shopify/sarama.v1"
   version = "1.12.0"
+[[constraint]]
+  name = "github.com/mssola/user_agent"
+  revision = "07efe2b857fb8c02d2dd85c12d0145f58554ec7c"

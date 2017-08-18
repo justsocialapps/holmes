@@ -44,6 +44,11 @@
   revision = "a08866ee7c386d23a843971fed36a4ae211a55a5"
 
 [[projects]]
+  name = "github.com/mssola/user_agent"
+  packages = ["."]
+  revision = "07efe2b857fb8c02d2dd85c12d0145f58554ec7c"
+
+[[projects]]
   name = "github.com/pierrec/lz4"
   packages = ["."]
   revision = "5c9560bfa9ace2bf86080bf40d46b34ae44604df"
@@ -76,6 +81,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "67a316aa619c717299afe89dd7940e03edd16d39eace8bc8991d3d4bf8af3ce1"
+  inputs-digest = "a9329458be9dc29e7e7eee08ce8db8c5bb2cc4a85be9709ad3583a0bd9e7e9b1"
   solver-name = "gps-cdcl"
   solver-version = 1
