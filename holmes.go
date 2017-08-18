@@ -15,7 +15,7 @@ import (
 	"gopkg.in/Shopify/sarama.v1"
 )
 
-const version string = "1.7.0-dev"
+const version string = "1.7.0"
 
 //go:generate scripts/prepare_assets.sh
 //go:generate go run scripts/include_assets.go
