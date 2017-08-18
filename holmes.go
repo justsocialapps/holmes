@@ -12,6 +12,7 @@ import (
 	"github.com/justsocialapps/holmes/assets"
 	"github.com/justsocialapps/holmes/publisher"
 	"github.com/justsocialapps/holmes/tracker"
+	"gopkg.in/Shopify/sarama.v1"
 )
 
 const version string = "1.7.0-dev"
@@ -66,6 +67,7 @@ func main() {
 		}
 	}
 	log.SetOutput(logFile)
+	sarama.Logger = log.New(logFile, "[Sarama] ", log.LstdFlags)
 
 	baseURL := *protocol + "://" + *host
 	if !(*protocol == "https" && *proxyPort == "443") && !(*protocol == "http" && *proxyPort == "80") {
