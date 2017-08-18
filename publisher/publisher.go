@@ -35,14 +35,14 @@ func Publish(trackingChannel <-chan *tracker.TrackingObject, kafkaHost *string, 
 	for {
 		select {
 		case successMsg := <-producer.Successes():
-			log.Printf("successfully delivered msg: %v\n", successMsg.Offset)
+			log.Printf("successfully delivered msg to offset %d and partition %d\n", successMsg.Offset, successMsg.Partition)
 		case errorMsg := <-producer.Errors():
 			log.Printf("error delivering message: %v\n", *errorMsg)
 		case object = <-trackingChannel:
 			stringifiedObject, err := json.Marshal(object)
 			if err == nil {
 				log.Printf("publishing %s", stringifiedObject)
-				producer.Input() <- &sarama.ProducerMessage{Topic: kafkaTopic, Key: sarama.StringEncoder("key"), Value: sarama.ByteEncoder(stringifiedObject), Timestamp: time.Now()}
+				producer.Input() <- &sarama.ProducerMessage{Topic: kafkaTopic, Key: nil, Value: sarama.ByteEncoder(stringifiedObject), Timestamp: time.Now()}
 			}
 		}
 	}
