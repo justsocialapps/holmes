@@ -90,6 +90,22 @@ the name of the file with `.` removed. This is, when you put the file
 variable named `Hellotxt` in the generated assets file, containing the contents
 of the `hello.txt` file.
 
+## Publishing a release
+
+When you're done hacking you presumably want to publish a new release. The
+script [publish-release.sh](scripts/publish-release.sh) helps you with that. It
+makes use of [gothub](github.com/itchio/gothub) which you'll have to install
+first:
+
+```sh
+go get github.com/itchio/gothub
+./scripts/publish-release.sh VERSION "A short description" YOUR_GITHUB_KEY
+```
+
+Replace `VERSION` with the version number of your release (e.g. 1.8.0) and
+`YOUR_GITHUB_KEY` with the key that you generated using the instructions from
+https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/.
+
 # License
 
 This software is distributed under the BSD 2-Clause License, see
