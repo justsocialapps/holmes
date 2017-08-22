@@ -68,8 +68,21 @@ func main() {
 	log.SetOutput(logFile)
 	sarama.Logger = log.New(logFile, "[Sarama] ", log.LstdFlags)
 
-	baseURL := *protocol + "://" + *host
-	if !(*protocol == "https" && *proxyPort == "443") && !(*protocol == "http" && *proxyPort == "80") {
+	var baseURL string
+
+	//only prepend the protocol when the user provided one
+	if *protocol != "" {
+		baseURL = *protocol + "://"
+	}
+
+	//only prepend the host when the user provided one
+	if *host != "" {
+		baseURL = *host
+	}
+
+	//we only need to specify the port number when it's different than the
+	//standard 80/443.
+	if *protocol != "" && !(*protocol == "https" && *proxyPort == "443") && !(*protocol == "http" && *proxyPort == "80") {
 		baseURL = baseURL + ":" + *proxyPort
 	}
 	baseURL = baseURL + *proxyPath
