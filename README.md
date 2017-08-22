@@ -15,7 +15,7 @@ on to a Kafka server (on the `tracking` topic).
 
 To install Holmes, run 
 
-```
+```sh
 go get github.com/justsocialapps/holmes
 ```
 
@@ -37,7 +37,8 @@ Type `holmes -h` to get a list of all parameters.
 Holmes provides a JavaScript client library that exposes a function to track
 certain user actions. Include that library into your pages and call the tracking
 function whenever appropriate. Here's the script tag for including the lib:
-```
+
+```html
 <script>
     !function(){var e="HOLMES_BASE_URL/analytics.js",t=document,a=t.createElement("script"),r=t.getElementsByTagName("script")[0];a.type="text/javascript",a.async=!0,a.defer=!0,a.src=e,r.parentNode.insertBefore(a,r)}();
 </script>
@@ -46,7 +47,7 @@ function whenever appropriate. Here's the script tag for including the lib:
 Replace `HOLMES_BASE_URL` with the address where users can reach Holmes. Then
 you can start tracking:
 
-```
+```javascript
 if (typeof (window.Holmes) === 'undefined') {
     return;
 }
@@ -60,10 +61,10 @@ that looks like this:
 
 ```
 {
-    referer: HTTP_REFERER,
-    ipAddress: REMOTE_IP_ADDRESS,
-    time: CURRENT_SERVER_UNIX_TIMESTAMP_IN_MS,
-    target: TRACKING_OBJECT
+    "referer": HTTP_REFERER,
+    "ipAddress": REMOTE_IP_ADDRESS,
+    "time": CURRENT_SERVER_UNIX_TIMESTAMP_IN_MS,
+    "target": TRACKING_OBJECT
 }
 ```
 
@@ -94,8 +95,8 @@ of the `hello.txt` file.
 
 When you're done hacking you presumably want to publish a new release. The
 script [publish-release.sh](scripts/publish-release.sh) helps you with that. It
-makes use of [gothub](github.com/itchio/gothub) which you'll have to install
-first:
+makes use of [gothub](https://github.com/itchio/gothub) which you'll have to 
+install first:
 
 ```sh
 go get github.com/itchio/gothub
