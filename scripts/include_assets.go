@@ -13,7 +13,7 @@ func main() {
 	fs, _ := ioutil.ReadDir("gen/")
 	out, _ := os.Create("assets/assets.go")
 	defer out.Close()
-	out.Write([]byte("package assets \n\nconst (\n"))
+	out.Write([]byte("package assets \n\nvar (\n"))
 	for _, f := range fs {
 		if f.Name() == "assets.go" {
 			continue // we do not want to include the assets file itself
