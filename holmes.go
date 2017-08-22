@@ -19,6 +19,7 @@ const version string = "1.8.0-dev"
 
 //go:generate scripts/prepare_assets.sh
 //go:generate go run scripts/include_assets.go
+//go:generate gofmt -w assets/assets.go
 
 func provideTrackingChannel(trackingChannel chan<- *tracker.TrackingObject, handler func(trackingChannel chan<- *tracker.TrackingObject, w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
