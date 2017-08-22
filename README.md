@@ -67,6 +67,29 @@ that looks like this:
 }
 ```
 
+# Development
+
+Hacking on Holmes normally involves no specific setup. Just retrieve the code
+and you're ready to get going. Although, there's one case where you need further
+setup:
+
+## Generating assets
+
+The contents of the `analytics.js` file are included in the Holmes binary so
+that you don't need to deploy them separately from it. Also, the Holmes banner
+that is printed on stdout upon startup is part of the binary. This means that
+any changes to the assets found in the `assets/` directory must be followed by a
+`go generate` call. Since the `analytics.js` file is then minified, the
+executable `uglifyjs` must be present on your `$PATH`. The simplest way to get
+it is to issue `npm install -g uglify-js`.
+
+Then, you can just call `go generate` and you'll have access to the contents of
+the files found in `assets/` in Holmes' source code. The variable name will be
+the name of the file with `.` removed. This is, when you put the file
+`hello.txt` in the `assets/` directory, then `go generate` will include a
+variable named `Hellotxt` in the generated assets file, containing the contents
+of the `hello.txt` file.
+
 # License
 
 This software is distributed under the BSD 2-Clause License, see
