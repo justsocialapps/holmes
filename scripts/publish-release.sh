@@ -9,9 +9,12 @@ if [[ ! $VERSION || ! $DESCRIPTION || ! $TOKEN ]] ; then
     exit 1
 fi
 
-sed -i -e 's/^const version string = ".*"/const version string = "${VERSION}"/' version.go
+sed -i -e "s/^const version string = \".*\"/const version string = \"${VERSION}\"/" version.go
 git add version.go
 git commit -m "Bump version number to ${VERSION}"
+
+exit 1
+
 git push origin master
 
 echo Creating draft version ${VERSION}...
