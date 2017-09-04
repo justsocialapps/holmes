@@ -77,7 +77,7 @@ func main() {
 
 	//only prepend the host when the user provided one
 	if *host != "" {
-		baseURL = *host
+		baseURL = baseURL + *host
 	}
 
 	//we only need to specify the port number when it's different than the
