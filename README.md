@@ -68,6 +68,32 @@ that looks like this:
 }
 ```
 
+## Enrich tracking events
+
+You can add application-specific fields to tracking events by calling
+`Holmes.addTrackingEnricher(enricherFunc)`. The client library then calls those
+functions whenever you call `Holmes.track()` and passes the tracking event
+object as argument. The `enricherFunc` can add additional data to this event.
+
+To make sure that Holmes is fully loaded when you call `addTrackingEnricher()`,
+you should wait for the DOM event named "holmesloaded" on the `window` object
+before registering enrichers.
+
+In the following example two fields are added to every tracking event.
+`applicationVersion` will be set to `1.2.3` and `applicationDate` to the current
+date:
+
+```javascript
+window.addEventListener('holmesloaded', function() {
+    window.Holmes.addTrackingEnricher(function(e) {
+        e.applicationVersion = '1.2.3';
+    });
+    window.Holmes.addTrackingEnricher(function(e) {
+        e.applicationDate = new Date().toString();
+    });
+});
+```
+
 # Development
 
 Hacking on Holmes normally involves no specific setup. Just retrieve the code
