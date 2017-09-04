@@ -13,8 +13,6 @@ sed -i -e "s/^const version string = \".*\"/const version string = \"${VERSION}\
 git add version.go
 git commit -m "Bump version number to ${VERSION}"
 
-exit 1
-
 git push origin master
 
 echo Creating draft version ${VERSION}...
