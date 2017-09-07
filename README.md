@@ -68,6 +68,47 @@ that looks like this:
 }
 ```
 
+## The `holmesloaded` event
+
+When Holmes is fully loaded it fires a `holmesloaded` event on the `window`
+object. This is useful if you want to configure or track things after your page
+loaded. Make sure to register the event listener before Holmes is loaded. You
+might miss the event otherwise:
+
+```html
+<script>
+    window.addEventListener('holmesloaded', function() {
+        // Configure holmes here
+    });
+
+    !function(){var e="HOLMES_BASE_URL/analytics.js",t=document,a=t.createElement("script"),r=t.getElementsByTagName("script")[0];a.type="text/javascript",a.async=!0,a.defer=!0,a.src=e,r.parentNode.insertBefore(a,r)}();
+</script>
+```
+
+## Enrich tracking events
+
+You can add application-specific fields to tracking events by calling
+`Holmes.addTrackingEnricher(enricherFunc)`. The client library then calls those
+functions whenever you call `Holmes.track()` and passes the tracking event
+object as argument. The `enricherFunc` can add additional data to this event.
+
+Note that you should configure Holmes after the `holmesloaded` event was fired.
+
+In the following example two fields are added to every tracking event.
+`applicationVersion` will be set to `1.2.3` and `applicationDate` to the current
+date:
+
+```javascript
+window.addEventListener('holmesloaded', function() {
+    window.Holmes.addTrackingEnricher(function(e) {
+        e.applicationVersion = '1.2.3';
+    });
+    window.Holmes.addTrackingEnricher(function(e) {
+        e.applicationDate = new Date().toString();
+    });
+});
+```
+
 # Development
 
 Hacking on Holmes normally involves no specific setup. Just retrieve the code
