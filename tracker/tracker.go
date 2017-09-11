@@ -34,7 +34,7 @@ type TrackingObject struct {
 
 func anonymizeIP(ip string) (string) {
 	ipAddress := net.ParseIP(ip)
-        if ipAddress.To4() == nil { // IPv6 address
+        if ipAddress.To4() == nil { 
 	       // mask IPv6 address
                return ipAddress.Mask(net.CIDRMask(48, 128)).String()
         } else {
