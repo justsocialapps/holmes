@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"strings"
 	"time"
@@ -31,6 +32,17 @@ type TrackingObject struct {
 	Target    map[string]interface{} `json:"target"`
 }
 
+func anonymizeIP(ip string) (string) {
+	ipAddress := net.ParseIP(ip)
+        if ipAddress.To4() == nil { // IPv6 address
+	       // mask IPv6 address
+               return ipAddress.Mask(net.CIDRMask(48, 128)).String()
+        } else {
+               return ipAddress.Mask(net.CIDRMask(24, 32)).String()
+        }
+}
+
+
 func composeTrackingObject(r *http.Request) (*TrackingObject, error) {
 	query := r.URL.Query()
 	rawTarget := query["t"]
@@ -53,6 +65,7 @@ func composeTrackingObject(r *http.Request) (*TrackingObject, error) {
 	} else {
 		originIPAddress = strings.Split(r.RemoteAddr, ":")[0]
 	}
+	anonymizedIpAddress := anonymizeIP(originIPAddress)
 
 	userAgent := ua.New(r.UserAgent())
 	browserName, browserVersion := userAgent.Browser()
@@ -69,7 +82,7 @@ func composeTrackingObject(r *http.Request) (*TrackingObject, error) {
 		},
 		UserAgent: userAgent.UA(),
 		Referer:   r.Referer(),
-		IPAddress: originIPAddress,
+		IPAddress: anonymizedIpAddress,
 		Time:      time.Now().Unix(),
 		Target:    target,
 	}
