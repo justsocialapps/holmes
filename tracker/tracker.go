@@ -32,6 +32,11 @@ type TrackingObject struct {
 	Target    map[string]interface{} `json:"target"`
 }
 
+type TrackingParams struct {
+	TrackingChannel chan<- *TrackingObject
+	AnonymizeIP bool
+}
+
 func anonymizeIP(ip string) (string) {
 	ipAddress := net.ParseIP(ip)
         if ipAddress.To4() == nil { 
@@ -43,7 +48,7 @@ func anonymizeIP(ip string) (string) {
 }
 
 
-func composeTrackingObject(r *http.Request) (*TrackingObject, error) {
+func composeTrackingObject(anonIP bool, r *http.Request) (*TrackingObject, error) {
 	query := r.URL.Query()
 	rawTarget := query["t"]
 	if len(rawTarget) == 0 {
@@ -65,7 +70,13 @@ func composeTrackingObject(r *http.Request) (*TrackingObject, error) {
 	} else {
 		originIPAddress = strings.Split(r.RemoteAddr, ":")[0]
 	}
-	anonymizedIpAddress := anonymizeIP(originIPAddress)
+	var trackingIPAddress string
+	if anonIP {
+	  	trackingIPAddress = anonymizeIP(originIPAddress)
+	} else {
+		trackingIPAddress = originIPAddress
+	}
+
 
 	userAgent := ua.New(r.UserAgent())
 	browserName, browserVersion := userAgent.Browser()
@@ -82,7 +93,7 @@ func composeTrackingObject(r *http.Request) (*TrackingObject, error) {
 		},
 		UserAgent: userAgent.UA(),
 		Referer:   r.Referer(),
-		IPAddress: anonymizedIpAddress,
+		IPAddress: trackingIPAddress,
 		Time:      time.Now().Unix(),
 		Target:    target,
 	}
@@ -90,14 +101,14 @@ func composeTrackingObject(r *http.Request) (*TrackingObject, error) {
 	return trackingObject, nil
 }
 
-func Track(out chan<- *TrackingObject, w http.ResponseWriter, r *http.Request) {
-	trackingObject, err := composeTrackingObject(r)
+func Track(params TrackingParams, w http.ResponseWriter, r *http.Request) {
+	trackingObject, err := composeTrackingObject(params.AnonymizeIP, r)
 	if err != nil {
 		log.Printf("Error processing tracking request: %s\n", err)
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
 
-	out <- trackingObject
+	params.TrackingChannel <- trackingObject
 	w.WriteHeader(http.StatusNoContent)
 }

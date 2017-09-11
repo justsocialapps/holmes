@@ -19,9 +19,9 @@ import (
 //go:generate go run scripts/include_assets.go
 //go:generate gofmt -w assets/assets.go
 
-func provideTrackingChannel(trackingChannel chan<- *tracker.TrackingObject, handler func(trackingChannel chan<- *tracker.TrackingObject, w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
+func provideTrackingParams(params tracker.TrackingParams, handler func(params tracker.TrackingParams, w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		handler(trackingChannel, w, r)
+		handler(params, w, r)
 	}
 }
 
@@ -48,6 +48,7 @@ func main() {
 	var kafkaHost = flag.String("kafkaHost", "localhost:9092", "The Kafka host to consume messages from")
 	var logfileName = flag.String("logfile", "", "The file to log messages to")
 	var printVersion = flag.Bool("version", false, "Print Holmes version and exit")
+	var anonIP = flag.Bool("anonIP", false, "Anonymize the tracked IP address")
 	flag.Parse()
 
 	if *printVersion {
@@ -88,7 +89,12 @@ func main() {
 	baseURL = baseURL + *proxyPath
 
 	trackingChannel := make(chan *tracker.TrackingObject, 10)
-	http.HandleFunc("/track", provideTrackingChannel(trackingChannel, tracker.Track))
+	trackingParams := tracker.TrackingParams{
+		trackingChannel,
+		*anonIP,
+	}
+
+	http.HandleFunc("/track", provideTrackingParams(trackingParams, tracker.Track))
 	http.HandleFunc("/analytics.js", analytics.Analytics(baseURL))
 	go publisher.Publish(trackingChannel, kafkaHost, "tracking")
 
