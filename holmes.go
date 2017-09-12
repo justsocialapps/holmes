@@ -48,7 +48,7 @@ func main() {
 	var kafkaHost = flag.String("kafkaHost", "localhost:9092", "The Kafka host to consume messages from")
 	var logfileName = flag.String("logfile", "", "The file to log messages to")
 	var printVersion = flag.Bool("version", false, "Print Holmes version and exit")
-	var anonIP = flag.Bool("anonIP", false, "Anonymize the tracked IP address")
+	var anonIP = flag.Bool("anonIP", false, "Sets the last octet (IPv4) or the last 80 bits (IPv6) of the client's IP address to 0 in the tracking object before submitting it to Kafka.")
 	flag.Parse()
 
 	if *printVersion {
