@@ -11,6 +11,9 @@ import (
 	"github.com/justsocialapps/justlib"
 )
 
+// Publish creates a Kafka producer and provides it with every TrackingObject
+// received via the given trackingChannel. If the producer cannot be started
+// the program is quit.
 func Publish(trackingChannel <-chan *tracker.TrackingObject, kafkaHost *string, kafkaTopic string) {
 	kafkaConfig := sarama.NewConfig()
 	kafkaConfig.Producer.Return.Errors = true

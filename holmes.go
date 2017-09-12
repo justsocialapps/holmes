@@ -38,6 +38,20 @@ func startServer(host string, port *string) {
 		log.Fatal(err)
 	}
 }
+func initLogging(logfileName *string) {
+	var logFile *os.File
+	if *logfileName == "" {
+		logFile = os.Stdout
+	} else {
+		var err error
+		logFile, err = os.OpenFile(*logfileName, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	log.SetOutput(logFile)
+	sarama.Logger = log.New(logFile, "[Sarama] ", log.LstdFlags)
+}
 
 func main() {
 	var protocol = flag.String("protocol", "https", "The protocol used to serve Holmes resources ('http' or 'https')")
@@ -56,18 +70,7 @@ func main() {
 		return
 	}
 
-	var logFile *os.File
-	if *logfileName == "" {
-		logFile = os.Stdout
-	} else {
-		var err error
-		logFile, err = os.OpenFile(*logfileName, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-	log.SetOutput(logFile)
-	sarama.Logger = log.New(logFile, "[Sarama] ", log.LstdFlags)
+	initLogging(logfileName)
 
 	var baseURL string
 
@@ -90,8 +93,8 @@ func main() {
 
 	trackingChannel := make(chan *tracker.TrackingObject, 10)
 	trackingParams := tracker.TrackingParams{
-		trackingChannel,
-		*anonIP,
+		TrackingChannel: trackingChannel,
+		AnonymizeIP:     *anonIP,
 	}
 
 	http.HandleFunc("/track", provideTrackingParams(trackingParams, tracker.Track))
