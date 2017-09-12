@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"strings"
 	"time"
@@ -31,7 +32,23 @@ type TrackingObject struct {
 	Target    map[string]interface{} `json:"target"`
 }
 
-func composeTrackingObject(r *http.Request) (*TrackingObject, error) {
+type TrackingParams struct {
+	TrackingChannel chan<- *TrackingObject
+	AnonymizeIP bool
+}
+
+func anonymizeIP(ip string) (string) {
+	ipAddress := net.ParseIP(ip)
+        if ipAddress.To4() == nil { 
+	       // mask IPv6 address
+               return ipAddress.Mask(net.CIDRMask(48, 128)).String()
+        } else {
+               return ipAddress.Mask(net.CIDRMask(24, 32)).String()
+        }
+}
+
+
+func composeTrackingObject(anonIP bool, r *http.Request) (*TrackingObject, error) {
 	query := r.URL.Query()
 	rawTarget := query["t"]
 	if len(rawTarget) == 0 {
@@ -53,6 +70,13 @@ func composeTrackingObject(r *http.Request) (*TrackingObject, error) {
 	} else {
 		originIPAddress = strings.Split(r.RemoteAddr, ":")[0]
 	}
+	var trackingIPAddress string
+	if anonIP {
+	  	trackingIPAddress = anonymizeIP(originIPAddress)
+	} else {
+		trackingIPAddress = originIPAddress
+	}
+
 
 	userAgent := ua.New(r.UserAgent())
 	browserName, browserVersion := userAgent.Browser()
@@ -69,7 +93,7 @@ func composeTrackingObject(r *http.Request) (*TrackingObject, error) {
 		},
 		UserAgent: userAgent.UA(),
 		Referer:   r.Referer(),
-		IPAddress: originIPAddress,
+		IPAddress: trackingIPAddress,
 		Time:      time.Now().Unix(),
 		Target:    target,
 	}
@@ -77,14 +101,14 @@ func composeTrackingObject(r *http.Request) (*TrackingObject, error) {
 	return trackingObject, nil
 }
 
-func Track(out chan<- *TrackingObject, w http.ResponseWriter, r *http.Request) {
-	trackingObject, err := composeTrackingObject(r)
+func Track(params TrackingParams, w http.ResponseWriter, r *http.Request) {
+	trackingObject, err := composeTrackingObject(params.AnonymizeIP, r)
 	if err != nil {
 		log.Printf("Error processing tracking request: %s\n", err)
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
 
-	out <- trackingObject
+	params.TrackingChannel <- trackingObject
 	w.WriteHeader(http.StatusNoContent)
 }
