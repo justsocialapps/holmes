@@ -30,7 +30,7 @@ func startServer(host string, port *string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("Holmes running on " + host + ":" + *port)
+	log.Printf("Holmes %s running on %s:%s", version, host, *port)
 	log.Println(assets.Bannertxt)
 
 	err = http.Serve(listener, nil)
