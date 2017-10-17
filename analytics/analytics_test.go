@@ -12,12 +12,12 @@ import (
 func TestAnalytics(t *testing.T) {
 	recorder := httptest.NewRecorder()
 	request, _ := http.NewRequest("GET", "", nil)
-	assets.Analyticsjs = "base url: __HOLMES_BASE_URL__ holmes id: __HOLMES_ID__"
+	assets.Analyticsjs = "base url: __HOLMES_BASE_URL__"
 	assert := assert.NewAssert(t)
 
 	Analytics("https://example.org/baseurl")(recorder, request)
 
 	assert.Equal(recorder.Header().Get("Content-Type"), "application/javascript", "wrong content type")
 	assert.Equal(recorder.Code, http.StatusOK, "wrong status code")
-	assert.Match("base url: https://example.org/baseurl holmes id: [0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", recorder.Body.String(), "wrong body")
+	assert.Match("base url: https://example.org/baseurl", recorder.Body.String(), "wrong body")
 }
