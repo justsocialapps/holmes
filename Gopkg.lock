@@ -67,12 +67,6 @@
   revision = "1f30fe9094a513ce4c700b9a54458bbb0c96996c"
 
 [[projects]]
-  name = "github.com/satori/go.uuid"
-  packages = ["."]
-  revision = "879c5887cd475cd7864858769793b2ceb0d44feb"
-  version = "v1.1.0"
-
-[[projects]]
   name = "gopkg.in/Shopify/sarama.v1"
   packages = ["."]
   revision = "c01858abb625b73a3af51d0798e4ad42c8147093"
@@ -81,6 +75,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a9329458be9dc29e7e7eee08ce8db8c5bb2cc4a85be9709ad3583a0bd9e7e9b1"
+  inputs-digest = "9cdd881f51e4e0bc67081e1a9bb419367af1733be34c39245704b07b27b0effa"
   solver-name = "gps-cdcl"
   solver-version = 1
