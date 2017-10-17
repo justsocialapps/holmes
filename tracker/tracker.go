@@ -13,6 +13,8 @@ import (
 	ua "github.com/mssola/user_agent"
 )
 
+// UserAgent holds values that are provided by the browser's "User-Agent" HTTP
+// header.
 type UserAgent struct {
 	Bot            bool   `json:"bot"`
 	Mobile         bool   `json:"mobile"`
@@ -23,6 +25,7 @@ type UserAgent struct {
 	Platform       string `json:"platform"`
 }
 
+// TrackingObject holds all data that is eventually sent to Kafka.
 type TrackingObject struct {
 	UA        UserAgent              `json:"ua"`
 	UserAgent string                 `json:"userAgent"`
@@ -32,21 +35,20 @@ type TrackingObject struct {
 	Target    map[string]interface{} `json:"target"`
 }
 
+// TrackingParams encapsulates the parameters passed to Track.
 type TrackingParams struct {
 	TrackingChannel chan<- *TrackingObject
-	AnonymizeIP bool
+	AnonymizeIP     bool
 }
 
-func anonymizeIP(ip string) (string) {
+func anonymizeIP(ip string) string {
 	ipAddress := net.ParseIP(ip)
-        if ipAddress.To4() == nil { 
-	       // mask IPv6 address
-               return ipAddress.Mask(net.CIDRMask(48, 128)).String()
-        } else {
-               return ipAddress.Mask(net.CIDRMask(24, 32)).String()
-        }
+	if ipAddress.To4() == nil {
+		// mask IPv6 address
+		return ipAddress.Mask(net.CIDRMask(48, 128)).String()
+	}
+	return ipAddress.Mask(net.CIDRMask(24, 32)).String()
 }
-
 
 func composeTrackingObject(anonIP bool, r *http.Request) (*TrackingObject, error) {
 	query := r.URL.Query()
@@ -72,11 +74,10 @@ func composeTrackingObject(anonIP bool, r *http.Request) (*TrackingObject, error
 	}
 	var trackingIPAddress string
 	if anonIP {
-	  	trackingIPAddress = anonymizeIP(originIPAddress)
+		trackingIPAddress = anonymizeIP(originIPAddress)
 	} else {
 		trackingIPAddress = originIPAddress
 	}
-
 
 	userAgent := ua.New(r.UserAgent())
 	browserName, browserVersion := userAgent.Browser()
@@ -101,6 +102,8 @@ func composeTrackingObject(anonIP bool, r *http.Request) (*TrackingObject, error
 	return trackingObject, nil
 }
 
+// Track is an HTTP handler function that sends tracking objects provided by
+// browsers to a channel.
 func Track(params TrackingParams, w http.ResponseWriter, r *http.Request) {
 	trackingObject, err := composeTrackingObject(params.AnonymizeIP, r)
 	if err != nil {
