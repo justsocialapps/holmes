@@ -9,7 +9,7 @@ import (
 	"github.com/satori/go.uuid"
 )
 
-// Analytics is an HTTP handler function that delivers the tracking client
+// Analytics returns an HTTP handler function that delivers the tracking client
 // library.
 func Analytics(baseURL string) http.HandlerFunc {
 	res := strings.Replace(assets.Analyticsjs, "__HOLMES_BASE_URL__", baseURL, -1)
