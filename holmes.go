@@ -25,12 +25,12 @@ func provideTrackingParams(params tracker.TrackingParams, handler func(params tr
 	}
 }
 
-func startServer(host string, port *string) {
-	listener, err := net.Listen("tcp", host+":"+*port)
+func startServer(host string, port string) {
+	listener, err := net.Listen("tcp", host+":"+port)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("Holmes %s running on %s:%s", version, host, *port)
+	log.Printf("Holmes %s running on %s:%s", version, host, port)
 	log.Println(assets.Bannertxt)
 
 	err = http.Serve(listener, nil)
@@ -58,6 +58,7 @@ func main() {
 	var host = flag.String("host", "localhost", "The host name used to reach Holmes")
 	var proxyPort = flag.String("proxyPort", "3001", "The TCP port for reaching Holmes if Holmes is operated behind a reverse proxy.")
 	var proxyPath = flag.String("proxyPath", "", "The base path for reaching Holmes if Holmes is operated behind a reverse proxy.")
+	var listenHost = flag.String("listenHost", "", "The host Holmes listens on.")
 	var listenPort = flag.String("listenPort", "3001", "The TCP port that Holmes listens on")
 	var kafkaHost = flag.String("kafkaHost", "localhost:9092", "The Kafka host to consume messages from")
 	var logfileName = flag.String("logfile", "", "The file to log messages to")
@@ -101,5 +102,5 @@ func main() {
 	http.HandleFunc("/analytics.js", analytics.Analytics(baseURL))
 	go publisher.Publish(trackingChannel, kafkaHost, "tracking")
 
-	startServer("localhost", listenPort)
+	startServer(*listenHost, *listenPort)
 }
