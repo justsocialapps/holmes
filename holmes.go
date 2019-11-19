@@ -62,7 +62,7 @@ func main() {
 	trackingChannel := make(chan *tracker.TrackingObject, 10)
 	trackingParams := tracker.TrackingParams{
 		TrackingChannel: trackingChannel,
-		AnonymizeIP:     anomyzeIP,
+		AnonymizeIP:     anonymizeIP,
 	}
 
 	go publisher.Publish(trackingChannel, kafkaHost, "tracking")

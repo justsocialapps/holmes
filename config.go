@@ -16,7 +16,7 @@ var (
 	kafkaHost    string
 	logfileName  string
 	printVersion bool
-	anomyzeIP    bool
+	anonymizeIP  bool
 )
 
 func init() {
@@ -29,7 +29,7 @@ func init() {
 	flag.StringVar(&kafkaHost, "kafkaHost", "localhost:9092", "The Kafka host to consume messages from")
 	flag.StringVar(&logfileName, "logfile", "", "The file to log messages to")
 	flag.BoolVar(&printVersion, "version", false, "Print Holmes version and exit")
-	flag.BoolVar(&anomyzeIP, "anonIP", false, "Sets the last octet (IPv4) or the last 80 bits (IPv6) of the client's IP address to 0 in the tracking object before submitting it to Kafka.")
+	flag.BoolVar(&anonymizeIP, "anonIP", false, "Sets the last octet (IPv4) or the last 80 bits (IPv6) of the client's IP address to 0 in the tracking object before submitting it to Kafka.")
 
 	flag.Parse()
 
