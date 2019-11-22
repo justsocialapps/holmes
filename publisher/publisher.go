@@ -13,7 +13,7 @@ import (
 // Publish creates a Kafka producer and provides it with every TrackingObject
 // received via the given trackingChannel. If the producer cannot be started
 // the program exits.
-func Publish(trackingChannel <-chan *tracker.TrackingObject, kafkaHost *string, kafkaTopic string) {
+func Publish(trackingChannel <-chan *tracker.TrackingObject, kafkaHost string, kafkaTopic string) {
 	kafkaConfig := sarama.NewConfig()
 	kafkaConfig.Producer.Return.Errors = true
 	// If true, we have to read from the Successes channel or the producer
@@ -24,7 +24,7 @@ func Publish(trackingChannel <-chan *tracker.TrackingObject, kafkaHost *string, 
 	var producer sarama.AsyncProducer
 	err := justlib.Try(0, 10*time.Second, func() error {
 		var err error
-		producer, err = sarama.NewAsyncProducer([]string{*kafkaHost}, kafkaConfig)
+		producer, err = sarama.NewAsyncProducer([]string{kafkaHost}, kafkaConfig)
 		if err != nil {
 			log.Printf("Connection attempt to Kafka broker failed; trying again...\n")
 		}
@@ -33,7 +33,7 @@ func Publish(trackingChannel <-chan *tracker.TrackingObject, kafkaHost *string, 
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("Kafka producer up and running with broker %s", *kafkaHost)
+	log.Printf("Kafka producer up and running with broker %s", kafkaHost)
 
 	var object *tracker.TrackingObject
 	for {
